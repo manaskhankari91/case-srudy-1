@@ -1,0 +1,72 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+# ------------------------------- # Step 1: Load the Dataset
+# ------------------------------- digits = datasets.load_digits() # Built-in dataset (8x8 images, 1797 samples)
+X = digits.data # Feature matrix (each image as flattened 8x8=64 vector)
+y = digits.target # Labels (0-9)
+print("Dataset shape:", X.shape)
+print("Unique labels:", np.unique(y))
+# Visualize some samples
+plt.figure(figsize=(6, 4))
+for i in range(8):
+plt.subplot(2, 4, i+1)
+plt.imshow(digits.images[i], cmap='gray')
+plt.title(f'Label: {digits.target[i]}')
+plt.axis('off')
+plt.show()
+# ------------------------------- # Step 2: Split the Dataset
+# ------------------------------- X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Standardize features
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+# ------------------------------- # Step 3: SVM Model
+# ------------------------------- svm_model = SVC(kernel='rbf', gamma=0.001, C=10)
+svm_model.fit(X_train, y_train)
+y_pred_svm = svm_model.predict(X_test)
+# Evaluate SVM
+print("\n SVM Model Results ")
+print("Accuracy:", accuracy_score(y_test, y_pred_svm))
+print("\nClassification Report:\n", classification_report(y_test, y_pred_svm))
+# Confusion Matrix for SVM
+plt.figure(figsize=(6,4))
+sns.heatmap(confusion_matrix(y_test, y_pred_svm), annot=True, fmt='d', cmap='Blues')
+plt.title("SVM Confusion Matrix")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+4
+plt.show()
+# ------------------------------- # Step 4: k-NN Model
+# ------------------------------- knn_model = KNeighborsClassifier(n_neighbors=5)
+knn_model.fit(X_train, y_train)
+y_pred_knn = knn_model.predict(X_test)
+# Evaluate k-NN
+print("\n k-NN Model Results ")
+print("Accuracy:", accuracy_score(y_test, y_pred_knn))
+print("\nClassification Report:\n", classification_report(y_test, y_pred_knn))
+# Confusion Matrix for k-NN
+plt.figure(figsize=(6,4))
+sns.heatmap(confusion_matrix(y_test, y_pred_knn), annot=True, fmt='d', cmap='Greens')
+plt.title("k-NN Confusion Matrix")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.show()
+# ------------------------------- # Step 5: Compare Performance
+# ------------------------------- svm_acc = accuracy_score(y_test, y_pred_svm)
+knn_acc = accuracy_score(y_test, y_pred_knn)
+print("\n✅ Model Comparison")
+print(f"SVM Accuracy : {svm_acc*100:.2f}%")
+5
+print(f"k-NN Accuracy: {knn_acc*100:.2f}%")
+# Visualize comparison
+plt.bar(['SVM', 'k-NN'], [svm_acc, knn_acc], color=['skyblue', 'lightgreen'])
+plt.title("Model Accuracy Comparison")
+plt.ylabel("Accuracy")
+plt.show()
